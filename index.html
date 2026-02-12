@@ -1197,8 +1197,6 @@
                 cardElement.className = 'project-card';
                 cardElement.setAttribute('data-project-id', project.id);
                 cardElement.style.opacity = '0';
-                cardElement.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                cardElement.style.transform = 'translateY(20px)';
                 // 添加拖拽属性
                 cardElement.draggable = true;
                 
@@ -1208,13 +1206,11 @@
                 imgElement.alt = project.title;
                 imgElement.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="225"%3E%3Crect width="400" height="225" fill="rgba(0, 0, 0, 0.1)"/%3E%3C/svg%3E';
                 imgElement.style.opacity = '0';
-                imgElement.style.transition = 'opacity 0.5s ease';
                 
                 // 创建卡片内容
                 const cardBody = document.createElement('div');
                 cardBody.className = 'card-body';
                 cardBody.style.opacity = '0';
-                cardBody.style.transition = 'opacity 0.5s ease';
                 
                 const cardTitle = document.createElement('h5');
                 cardTitle.className = 'card-title';
@@ -1258,25 +1254,21 @@
                 const cardElement = cardElements[currentLoadingIndex];
                 const { image, project, card, cardBody } = cardElement;
                 
-                // 卡片从下方滑入并逐渐显示
+                // 直接显示卡片
                 card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
                 
                 // 立即开始加载图片
                     if (project.cover_image) {
-                        console.log('加载项目图片:', project.cover_image);
                         image.src = project.cover_image;
                         
                         // 图片加载完成后显示
                         image.onload = function() {
-                            console.log('图片加载成功:', this.src);
                             this.style.opacity = '1';
                             cardBody.style.opacity = '1';
                         };
                         
                         // 图片加载失败的处理
                         image.onerror = function() {
-                            console.log('图片加载失败:', this.src);
                             // 尝试其他可能的图片路径
                             const otherFormats = [
                                 `${OSS_BASE_URL}${project.id}/image1.png`,
@@ -1318,7 +1310,7 @@
                             // 尝试下一个格式
                             let currentFormatIndex = 0;
                             let retryCount = 0;
-                            const maxRetries = 3;
+                            const maxRetries = 1;
                             
                             function tryNextFormat() {
                                 if (currentFormatIndex >= otherFormats.length) {
@@ -1330,7 +1322,6 @@
                                 }
                                 
                                 const nextFormat = otherFormats[currentFormatIndex];
-                                console.log('尝试其他格式:', nextFormat);
                                 this.src = nextFormat;
                                 currentFormatIndex++;
                             }
@@ -1342,7 +1333,6 @@
                                 }
                                 
                                 retryCount++;
-                                console.log('重试加载图片:', this.src, '第', retryCount, '次');
                                 this.src = this.src + '?t=' + new Date().getTime();
                             }
                             
@@ -1351,13 +1341,11 @@
                             
                             // 重新设置onload和onerror事件
                             this.onload = function() {
-                                console.log('图片加载成功:', this.src);
                                 this.style.opacity = '1';
                                 cardBody.style.opacity = '1';
                             };
                             
                             this.onerror = function() {
-                                console.log('图片加载失败:', this.src);
                                 if (retryCount < maxRetries) {
                                     retryLoad.call(this);
                                 } else {
@@ -1374,7 +1362,7 @@
                 
                 // 延迟加载下一张，避免过快的递归调用
                 currentLoadingIndex++;
-                setTimeout(loadNextCard, 100); // 添加100ms延迟
+                setTimeout(loadNextCard, 30); // 减少延迟到30ms
             }
             
             // 开始加载当前页的卡片
