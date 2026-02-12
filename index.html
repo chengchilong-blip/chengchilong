@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>空间设计作品展示</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* 触摸反馈样式 */
+        .touch-feedback {
+            -webkit-tap-highlight-color: rgba(0, 191, 255, 0.3);
+        }
+        
+        /* 禁用双击缩放 */
+        * {
+            touch-action: manipulation;
+        }
+        
+        /* 优化滚动性能 */
+        body {
+            -webkit-overflow-scrolling: touch;
+            overflow-scrolling: touch;
+        }
+        
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            /* 增大点击区域 */
+            .project-card {
+                min-height: 150px;
+            }
+            
+            /* 优化搜索框 */
+            #search-input {
+                font-size: 16px !important;
+                height: 48px !important;
+            }
+            
+            /* 优化模态框控制按钮 */
+            .zoom-btn,
+            .scroll-btn,
+            .toggle-btn {
+                width: 50px !important;
+                height: 50px !important;
+                font-size: 24px !important;
+            }
+            
+            /* 优化图片查看器 */
+            #image-scroll-container {
+                height: 70vh !important;
+            }
+            
+            /* 优化网格视图 */
+            .grid-view {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
+                gap: 10px !important;
+                padding: 15px !important;
+            }
+            
+            /* 优化字体大小 */
+            .card-title {
+                font-size: 16px !important;
+                padding: 10px !important;
+            }
+            
+            /* 优化模态框标题 */
+            .modal-title {
+                font-size: 18px !important;
+            }
+        }
+        
+        /* 小屏幕设备优化 */
+        @media (max-width: 480px) {
+            /* 项目卡片单列显示 */
+            #projects-container {
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+                padding: 0 15px !important;
+            }
+            
+            /* 增大项目卡片高度 */
+            .project-card {
+                min-height: 180px;
+            }
+            
+            /* 优化网格视图 */
+            .grid-view {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+                gap: 8px !important;
+                padding: 10px !important;
+            }
+        }
+    </style>
+    <style>
+        /* 科技感网格背景 */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #0a1128;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: white;
+            cursor: default;
+        }
+        
+        /* 默认光标样式 */
+        * {
+            cursor: default;
+        }
+        
+        /* 链接和按钮的光标样式 */
+        a, button, .project-card {
+            cursor: pointer;
+        }
+        
+        /* 输入框光标效果增强 */
+        input[type="text"] {
+            caret-color: #00bfff;
+            color: white;
+            text-shadow: 0 0 8px rgba(0, 191, 255, 0.7);
+        }
+        
+        /* 输入框获得焦点时的效果 */
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.5) inset;
+        }
+        
+        /* 全局文字颜色设置 */
+        * {
+            color: white !important;
+        }
+        
+        /* 基础字体设置 */
+        body {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .navbar {
+            background-color: rgba(10, 17, 40, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .hero {
+            background: linear-gradient(rgba(10, 17, 40, 0.9), rgba(10, 17, 40, 0.9)), url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 字体响应式调整 */
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+                line-height: 1.4;
+            }
+            
+            .navbar-brand {
+                font-size: 18px !important;
+                font-weight: 600;
+            }
+            
+            .card-title {
+                font-size: 16px !important;
+                font-weight: 500;
+                line-height: 1.3;
+                padding: 12px 10px !important;
+            }
+            
+            .modal-title {
+                font-size: 18px !important;
+                font-weight: 600;
+            }
+            
+            .footer p {
+                font-size: 14px !important;
+            }
+        }
+        
+        /* 小屏幕设备字体调整 */
+        @media (max-width: 480px) {
+            body {
+                font-size: 13px;
+            }
+            
+            .navbar-brand {
+                font-size: 16px !important;
+            }
+            
+            .card-title {
+                font-size: 15px !important;
+            }
+            
+            .modal-title {
+                font-size: 17px !important;
+            }
+            
+            .footer p {
+                font-size: 13px !important;
+            }
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(0, 123, 255, 0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        /* 项目卡片网格布局 */
+        #projects-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 响应式网格调整 */
+        @media (max-width: 1200px) {
+            #projects-container {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 18px;
+                padding: 0 18px;
+            }
+        }
+        @media (max-width: 992px) {
+            #projects-container {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 16px;
+                padding: 0 16px;
+            }
+        }
+        @media (max-width: 768px) {
+            #projects-container {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 15px;
+                padding: 0 15px;
+            }
+        }
+        @media (max-width: 576px) {
+            #projects-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 0 15px;
+            }
+        }
+        
+        /* 优化搜索框响应式设计 */
+        @media (max-width: 768px) {
+            .input-group {
+                max-width: 90% !important;
+                margin: 0 auto !important;
+            }
+            
+            #search-input {
+                font-size: 16px !important;
+                height: 48px !important;
+                padding: 0 15px !important;
+            }
+            
+            .input-group button {
+                padding: 0 20px !important;
+            }
+        }
+        
+        /* 优化模态框响应式设计 */
+        @media (max-width: 768px) {
+            .modal-content {
+                background-color: rgba(10, 17, 40, 0.98) !important;
+            }
+            
+            .modal-header {
+                padding: 15px !important;
+            }
+            
+            .modal-title {
+                font-size: 18px !important;
+            }
+            
+            .modal-footer {
+                padding: 15px !important;
+            }
+            
+            .modal-footer button {
+                padding: 10px 20px !important;
+                font-size: 16px !important;
+            }
+        }
+        
+        /* 优化导航栏响应式设计 */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 10px 0 !important;
+            }
+            
+            .navbar-brand {
+                font-size: 18px !important;
+                padding: 0 15px !important;
+            }
+        }
+        
+        /* 优化页脚响应式设计 */
+        @media (max-width: 768px) {
+            .footer {
+                padding: 20px 0 !important;
+                margin-top: 30px !important;
+            }
+            
+            .footer p {
+                font-size: 14px !important;
+            }
+        }
+        
+        @media (min-width: 2000px) {
+            #projects-container {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 30px;
+            }
+        }
+        
+        .project-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .project-card .card-body {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 123, 255, 0.3);
+            border-color: rgba(0, 123, 255, 0.5);
+        }
+        
+        /* 拖拽状态样式 */
+        .project-card.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+            z-index: 1000;
+        }
+        
+        .project-image {
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+            filter: brightness(0.8);
+            transition: filter 0.3s ease;
+            /* 图片懒加载 */
+            loading: lazy;
+        }
+        
+        /* 优化图片加载性能 */
+        .lazy-load {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .lazy-load.loaded {
+            opacity: 1;
+        }
+        
+        .project-card:hover .project-image {
+            filter: brightness(1);
+        }
+        
+        .footer {
+            background-color: rgba(10, 17, 40, 0.95);
+            color: white;
+            padding: 30px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 50px;
+        }
+        
+        .card-body {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 0 0 8px 8px;
+            color: white !important;
+        }
+        
+        .card-title {
+            font-weight: 400;
+            font-size: 14px;
+            color: white !important;
+            text-shadow: 0 0 5px rgba(0, 191, 255, 0.5);
+        }
+        /* 相册网格显示模式样式 */
+        #image-scroll-container {
+            position: relative;
+            height: 80vh;
+            background-color: #000;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            overflow-scrolling: touch;
+        }
+        /* 网格视图样式 */
+        .grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 30px;
+        }
+        .grid-image-item {
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+        }
+        .grid-image-item:active {
+            transform: scale(0.95);
+        }
+        .grid-image {
+            height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            touch-action: manipulation;
+        }
+        /* 单张查看模式样式 */
+        .single-view {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            position: relative;
+            touch-action: none;
+        }
+        .main-image {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            transition: all 0.3s ease;
+            cursor: zoom-in;
+            touch-action: none;
+        }
+        .main-image.zoomed {
+            cursor: zoom-out;
+        }
+        
+        /* 移动端图片查看器优化 */
+        @media (max-width: 768px) {
+            #image-scroll-container {
+                height: 70vh !important;
+            }
+            
+            .grid-view {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+                gap: 10px !important;
+                padding: 15px !important;
+            }
+            
+            .grid-image-item {
+                height: 120px !important;
+            }
+            
+            .main-image {
+                max-width: 95% !important;
+                max-height: 85% !important;
+            }
+            
+            .image-info {
+                font-size: 14px !important;
+                padding: 8px 12px !important;
+                top: 15px !important;
+                left: 15px !important;
+            }
+            
+            .image-controls {
+                bottom: 20px !important;
+                gap: 15px !important;
+            }
+            
+            .control-btn {
+                padding: 8px 16px !important;
+                font-size: 14px !important;
+            }
+        }
+        .image-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .control-btn {
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .control-btn:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+        .image-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            border-radius: 4px;
+        }
+        .scroll-controls {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .scroll-btn {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: background-color 0.3s ease;
+        }
+        .scroll-btn:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .scroll-btn-up {
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .scroll-btn-down {
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        /* 缩放控制按钮 */
+        .zoom-controls {
+            position: absolute;
+            top: 120px;
+            right: 30px;
+            pointer-events: auto;
+            z-index: 10;
+        }
+        .zoom-btn {
+            display: block;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .zoom-btn:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        /* 加载动画样式 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(0, 191, 255, 0.2);
+            border-top: 3px solid #00bfff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+            box-shadow: 0 0 15px rgba(0, 191, 255, 0.3);
+        }
+        
+        /* 视图切换按钮 */
+        .view-toggle {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            z-index: 10;
+        }
+        .toggle-btn {
+            padding: 8px 16px;
+            background-color: rgba(0, 191, 255, 0.1);
+            border: 1px solid rgba(0, 191, 255, 0.3);
+            border-radius: 4px;
+            color: #00bfff;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 191, 255, 0.2);
+        }
+        .toggle-btn:hover {
+            background-color: rgba(0, 191, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 191, 255, 0.4);
+        }
+        .toggle-btn.active {
+            background-color: rgba(0, 191, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.5);
+        }
+        
+        /* 控制按钮样式 */
+        .control-btn {
+            padding: 10px 20px;
+            background-color: rgba(0, 191, 255, 0.1);
+            border: 1px solid rgba(0, 191, 255, 0.3);
+            border-radius: 4px;
+            color: #00bfff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 191, 255, 0.2);
+        }
+        .control-btn:hover {
+            background-color: rgba(0, 191, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 191, 255, 0.4);
+        }
+        
+        .scroll-btn {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0, 191, 255, 0.1);
+            border: 1px solid rgba(0, 191, 255, 0.3);
+            border-radius: 50%;
+            color: #00bfff;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 191, 255, 0.2);
+        }
+        .scroll-btn:hover {
+            background-color: rgba(0, 191, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 191, 255, 0.4);
+        }
+        
+        .zoom-btn {
+            display: block;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 191, 255, 0.1);
+            border: 1px solid rgba(0, 191, 255, 0.3);
+            border-radius: 50%;
+            color: #00bfff;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 191, 255, 0.2);
+        }
+        .zoom-btn:hover {
+            background-color: rgba(0, 191, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 191, 255, 0.4);
+        }
+        
+        /* 图片容器样式 */
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        /* 图片信息样式 */
+        .image-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #00bfff;
+            background-color: rgba(0, 191, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 191, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 191, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#" style="font-size: 18px; font-weight: 600;">空间设计作品展示</a>
+        </div>
+    </nav>
+
+    <!-- 搜索区域 -->
+    <section class="py-5 pt-15" style="position: relative; padding-top: 100px;">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-11">
+                    <div class="input-group mb-3" style="border-radius: 4px; overflow: hidden; box-shadow: 0 0 20px rgba(0, 191, 255, 0.3); border: 1px solid rgba(0, 191, 255, 0.5); background-color: rgba(10, 17, 40, 0.8); backdrop-filter: blur(10px);">
+                        <input type="text" class="form-control" placeholder="搜索项目..." id="search-input" style="border: none; padding: 15px 20px; font-size: 16px; background-color: transparent; color: white; box-shadow: none; caret-color: #00bfff; text-shadow: 0 0 5px rgba(0, 191, 255, 0.5);">
+                        <button class="btn" onclick="searchProjects()" style="background-color: rgba(0, 191, 255, 0.2); border: none; padding: 0 30px; font-size: 16px; font-weight: 500; color: #00bfff; box-shadow: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <style>
+        /* 移动端导航优化 */
+        @media (max-width: 768px) {
+            .navbar {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                z-index: 1000 !important;
+                background-color: rgba(10, 17, 40, 0.98) !important;
+            }
+            
+            .pt-15 {
+                padding-top: 100px !important;
+            }
+            
+            /* 增大触摸区域 */
+            .project-card {
+                min-height: 160px;
+                margin-bottom: 15px;
+            }
+            
+            /* 优化模态框关闭按钮 */
+            .btn-close {
+                width: 40px !important;
+                height: 40px !important;
+                font-size: 20px !important;
+            }
+            
+            /* 优化模态框控制按钮 */
+            .zoom-controls {
+                top: 100px !important;
+                right: 20px !important;
+            }
+            
+            .zoom-btn {
+                width: 45px !important;
+                height: 45px !important;
+                font-size: 22px !important;
+            }
+            
+            /* 添加下拉刷新提示 */
+            .pull-to-refresh {
+                text-align: center;
+                padding: 20px;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 14px;
+            }
+        }
+    </style>
+
+    <section class="py-5">
+        <div class="container">
+            <div id="projects-container">
+                <!-- 项目卡片将通过JavaScript动态生成 -->
+            </div>
+        </div>
+    </section>
+
+
+
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p>&copy; 2024 空间设计作品展示</p>
+        </div>
+    </footer>
+
+    <!-- 模态框 -->
+    <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content" style="border: none; border-radius: 0; background-color: rgba(10, 17, 40, 0.95); backdrop-filter: blur(10px);">
+                <div class="modal-header" style="background-color: rgba(0, 191, 255, 0.1); color: #00bfff; border: none; border-radius: 0; border-bottom: 1px solid rgba(0, 191, 255, 0.2);">
+                    <h5 class="modal-title" id="projectModalLabel" style="font-weight: 600; text-shadow: 0 0 10px rgba(0, 191, 255, 0.5);">项目标题</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1); opacity: 0.8; background-color: rgba(0, 191, 255, 0.1); border-radius: 4px;"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="image-scroll-container">
+                        <!-- 图片将通过JavaScript动态生成 -->
+                    </div>
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" onclick="zoomIn()">+</button>
+                        <button class="zoom-btn" onclick="zoomOut()">-</button>
+                        <button class="zoom-btn" onclick="resetZoom()">1:1</button>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background-color: rgba(0, 191, 255, 0.1); border: none; border-radius: 0; border-top: 1px solid rgba(0, 191, 255, 0.2);">
+                    <button type="button" class="btn" data-bs-dismiss="modal" style="background-color: rgba(0, 191, 255, 0.2); color: #00bfff; font-weight: 500; border: 1px solid rgba(0, 191, 255, 0.5); box-shadow: 0 0 10px rgba(0, 191, 255, 0.3);">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 项目数据
+        let projects = [];
+        // 项目图片数据
+        const projectImages = {};
+        
+        // 触摸事件变量
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+        let isDragging = false;
+        let lastTouchDistance = 0;
+        let currentScale = 1;
+        let startScale = 1;
+
+        // 初始化项目数据
+        function initProjects() {
+            // 清空现有项目数据
+            projects = [];
+            
+            // 清空现有项目图片数据
+            Object.keys(projectImages).forEach(key => {
+                delete projectImages[key];
+            });
+            
+            console.log('初始化项目数据...');
+            
+            // 尝试加载所有可能的项目目录
+            const possibleProjectDirs = [
+                '今日家园',
+                '八宝山街道永东北社区',
+                '古城泰然体育健康中心',
+                '复兴路24号社区长廊',
+                '平谷刑侦办公通道',
+                '永定路东里社区',
+                '海能环境办公室',
+                '海能环境办公楼',
+                '翠西楼道空间文化墙打造',
+                '金沟河东路社区居委会文化',
+                '万寿路28号社区',
+                '万寿路街道党群服务中心门头',
+                '中农健康科技',
+                '中组部老干部活动站',
+                '太平路22号院',
+                '学院路街道办事处大件垃圾堆放处',
+                '曙光街道世纪城西区社区会客议事厅',
+                '曙光街道远大园社区',
+                '永东南社区',
+                '永定路街道新就业群体友好驿站',
+                '玉泉西里北社区文化墙',
+                '玉泉西里西社区党群服务中心',
+                '石景山区委党校运动健康中心',
+                '金雅园社区文化墙' // 新添加的项目
+            ];
+
+            // 为每个项目创建数据
+            possibleProjectDirs.forEach(dirName => {
+                // 创建项目对象
+                const project = {
+                    id: dirName,
+                    title: dirName,
+                    cover_image: null
+                };
+
+                projects.push(project);
+
+                // 为项目添加图片数据
+                projectImages[dirName] = [];
+
+                // 对于海能环境办公室项目，直接指定实际存在的图片
+                if (dirName === '海能环境办公室') {
+                    project.cover_image = 'projects/海能环境办公室/1.png';
+                    projectImages[dirName] = [
+                        'projects/海能环境办公室/1.png',
+                        'projects/海能环境办公室/2.png',
+                        'projects/海能环境办公室/3.png',
+                        'projects/海能环境办公室/休闲区.001.png',
+                        'projects/海能环境办公室/休闲区.png',
+                        'projects/海能环境办公室/入口.001.png',
+                        'projects/海能环境办公室/入口.png',
+                        'projects/海能环境办公室/大会议室.001.png',
+                        'projects/海能环境办公室/大会议室.png',
+                        'projects/海能环境办公室/小会议室.png',
+                        'projects/海能环境办公室/接待室  2.png',
+                        'projects/海能环境办公室/接待室.png',
+                        'projects/海能环境办公室/节约.png',
+                        'projects/海能环境办公室/走道.5.png'
+                    ];
+                }
+                // 对于平谷刑侦办公通道项目
+                else if (dirName === '平谷刑侦办公通道') {
+                    project.cover_image = 'projects/平谷刑侦办公通道/一层.001.png';
+                    projectImages[dirName] = [
+                        'projects/平谷刑侦办公通道/一层.001.png',
+                        'projects/平谷刑侦办公通道/一层.002.png',
+                        'projects/平谷刑侦办公通道/一层.png',
+                        'projects/平谷刑侦办公通道/一层防诈.png',
+                        'projects/平谷刑侦办公通道/二层.001.png',
+                        'projects/平谷刑侦办公通道/二层.002.png',
+                        'projects/平谷刑侦办公通道/二层.003.png',
+                        'projects/平谷刑侦办公通道/二层.004.png',
+                        'projects/平谷刑侦办公通道/二层.005.png',
+                        'projects/平谷刑侦办公通道/二层.006.png',
+                        'projects/平谷刑侦办公通道/二层.007.png',
+                        'projects/平谷刑侦办公通道/二层.008.png',
+                        'projects/平谷刑侦办公通道/二层.009.png',
+                        'projects/平谷刑侦办公通道/二层.010.png',
+                        'projects/平谷刑侦办公通道/二层.011.png',
+                        'projects/平谷刑侦办公通道/二层.012.png',
+                        'projects/平谷刑侦办公通道/二层.013.png',
+                        'projects/平谷刑侦办公通道/二层.014.png',
+                        'projects/平谷刑侦办公通道/二层.015.png',
+                        'projects/平谷刑侦办公通道/二层.016.png',
+                        'projects/平谷刑侦办公通道/二层.png',
+                        'projects/平谷刑侦办公通道/二层党建.001.png',
+                        'projects/平谷刑侦办公通道/二层党建.002.png',
+                        'projects/平谷刑侦办公通道/二层党建.003.png',
+                        'projects/平谷刑侦办公通道/二层党建.004.png',
+                        'projects/平谷刑侦办公通道/二层党建.005.png',
+                        'projects/平谷刑侦办公通道/二层党建.006.png',
+                        'projects/平谷刑侦办公通道/二层党建.007.png',
+                        'projects/平谷刑侦办公通道/二层党建.png',
+                        'projects/平谷刑侦办公通道/三层.001.png',
+                        'projects/平谷刑侦办公通道/三层.002.png',
+                        'projects/平谷刑侦办公通道/三层.003.png',
+                        'projects/平谷刑侦办公通道/三层.004.png',
+                        'projects/平谷刑侦办公通道/三层.005.png',
+                        'projects/平谷刑侦办公通道/三层.006.png',
+                        'projects/平谷刑侦办公通道/三层.007.png',
+                        'projects/平谷刑侦办公通道/三层.png',
+                        'projects/平谷刑侦办公通道/健身房.001.png',
+                        'projects/平谷刑侦办公通道/健身房.002.png',
+                        'projects/平谷刑侦办公通道/健身房.003.png',
+                        'projects/平谷刑侦办公通道/健身房.png',
+                        'projects/平谷刑侦办公通道/楼梯一.001.png',
+                        'projects/平谷刑侦办公通道/楼梯一.002.png',
+                        'projects/平谷刑侦办公通道/楼梯一.003.png',
+                        'projects/平谷刑侦办公通道/楼梯一.004.png',
+                        'projects/平谷刑侦办公通道/楼梯一.005.png',
+                        'projects/平谷刑侦办公通道/楼梯一.006.png',
+                        'projects/平谷刑侦办公通道/楼梯一.png',
+                        'projects/平谷刑侦办公通道/楼梯二.001.png',
+                        'projects/平谷刑侦办公通道/楼梯二.002.png',
+                        'projects/平谷刑侦办公通道/楼梯二.003.png',
+                        'projects/平谷刑侦办公通道/楼梯二.004.png',
+                        'projects/平谷刑侦办公通道/楼梯二.005.png',
+                        'projects/平谷刑侦办公通道/楼梯二.006.png',
+                        'projects/平谷刑侦办公通道/楼梯二.png'
+                    ];
+                }
+                // 对于永定路东里社区项目
+                else if (dirName === '永定路东里社区') {
+                    project.cover_image = 'projects/永定路东里社区/Camera.001.png';
+                    projectImages[dirName] = [
+                        'projects/永定路东里社区/Camera.001.png',
+                        'projects/永定路东里社区/Camera.002.png',
+                        'projects/永定路东里社区/Camera.003.png',
+                        'projects/永定路东里社区/Camera.004.png',
+                        'projects/永定路东里社区/Camera.png'
+                    ];
+                }
+                // 对于翠西楼道空间文化墙打造项目
+                else if (dirName === '翠西楼道空间文化墙打造') {
+                    // 为翠西楼道空间文化墙打造项目设置实际图片
+                    project.cover_image = 'projects/翠西楼道空间文化墙打造/image5.png';
+                    projectImages[dirName] = [
+                        'projects/翠西楼道空间文化墙打造/image3.png',
+                        'projects/翠西楼道空间文化墙打造/image4.png',
+                        'projects/翠西楼道空间文化墙打造/image5.png',
+                        'projects/翠西楼道空间文化墙打造/image6.png',
+                        'projects/翠西楼道空间文化墙打造/image7.png',
+                        'projects/翠西楼道空间文化墙打造/image8.png',
+                        'projects/翠西楼道空间文化墙打造/image9.png',
+                        'projects/翠西楼道空间文化墙打造/image10.png',
+                        'projects/翠西楼道空间文化墙打造/image11.png'
+                    ];
+                }
+                // 对于八宝山街道永东北社区项目
+                else if (dirName === '八宝山街道永东北社区') {
+                    // 为八宝山街道项目设置实际图片
+                    project.cover_image = 'projects/八宝山街道永东北社区/image5.png';
+                    projectImages[dirName] = [
+                        'projects/八宝山街道永东北社区/image4.png',
+                        'projects/八宝山街道永东北社区/image5.png',
+                        'projects/八宝山街道永东北社区/image6.png',
+                        'projects/八宝山街道永东北社区/image7.png',
+                        'projects/八宝山街道永东北社区/image8.png',
+                        'projects/八宝山街道永东北社区/image9.png',
+                        'projects/八宝山街道永东北社区/image10.png',
+                        'projects/八宝山街道永东北社区/image11.png',
+                        'projects/八宝山街道永东北社区/image12.png'
+                    ];
+                }
+                // 对于今日家园项目
+                else if (dirName === '今日家园') {
+                    // 使用实际存在的图片作为封面
+                    project.cover_image = 'projects/今日家园/image4.png';
+                    projectImages[dirName] = [
+                        'projects/今日家园/image4.png',
+                        'projects/今日家园/image5.png',
+                        'projects/今日家园/image6.png',
+                        'projects/今日家园/image7.png',
+                        'projects/今日家园/image8.png',
+                        'projects/今日家园/image9.png',
+                        'projects/今日家园/image10.png',
+                        'projects/今日家园/image11.png'
+                    ];
+                }
+                // 对于古城泰然体育健康中心项目
+                else if (dirName === '古城泰然体育健康中心') {
+                    // 使用实际存在的图片作为封面
+                    project.cover_image = 'projects/古城泰然体育健康中心/image4.png';
+                    projectImages[dirName] = [
+                        'projects/古城泰然体育健康中心/image4.png',
+                        'projects/古城泰然体育健康中心/image5.png',
+                        'projects/古城泰然体育健康中心/image6.png',
+                        'projects/古城泰然体育健康中心/image7.png',
+                        'projects/古城泰然体育健康中心/image8.png',
+                        'projects/古城泰然体育健康中心/image9.png',
+                        'projects/古城泰然体育健康中心/image10.png',
+                        'projects/古城泰然体育健康中心/image11.png'
+                    ];
+                }
+                // 对于复兴路24号社区长廊项目
+                else if (dirName === '复兴路24号社区长廊') {
+                    // 使用实际存在的图片作为封面
+                    project.cover_image = 'projects/复兴路24号社区长廊/image3.png';
+                    projectImages[dirName] = [
+                        'projects/复兴路24号社区长廊/image3.png'
+                    ];
+                }
+                // 对于海能环境办公楼项目
+                else if (dirName === '海能环境办公楼') {
+                    // 使用实际存在的图片作为封面
+                    project.cover_image = 'projects/海能环境办公楼/image11.png';
+                    projectImages[dirName] = [
+                        'projects/海能环境办公楼/image11.png',
+                        'projects/海能环境办公楼/image12.png',
+                        'projects/海能环境办公楼/image13.png',
+                        'projects/海能环境办公楼/image16.png',
+                        'projects/海能环境办公楼/image17.png',
+                        'projects/海能环境办公楼/image19.png',
+                        'projects/海能环境办公楼/image20.png',
+                        'projects/海能环境办公楼/image22.png',
+                        'projects/海能环境办公楼/image23.png',
+                        'projects/海能环境办公楼/image24.png',
+                        'projects/海能环境办公楼/image25.png',
+                        'projects/海能环境办公楼/image26.png',
+                        'projects/海能环境办公楼/image27.png',
+                        'projects/海能环境办公楼/image28.png',
+                        'projects/海能环境办公楼/image29.png',
+                        'projects/海能环境办公楼/image30.png',
+                        'projects/海能环境办公楼/image33.png',
+                        'projects/海能环境办公楼/image7.png'
+                    ];
+                }
+                // 对于金沟河东路社区居委会文化项目
+                else if (dirName === '金沟河东路社区居委会文化') {
+                    // 使用实际存在的图片作为封面
+                    project.cover_image = 'projects/金沟河东路社区居委会文化/image3.png';
+                    projectImages[dirName] = [
+                        'projects/金沟河东路社区居委会文化/image3.png',
+                        'projects/金沟河东路社区居委会文化/image4.png',
+                        'projects/金沟河东路社区居委会文化/image5.png',
+                        'projects/金沟河东路社区居委会文化/image6.png'
+                    ];
+                }
+                // 对于万寿路28号社区项目
+                else if (dirName === '万寿路28号社区') {
+                    // 使用实际存在的图片路径
+                    project.cover_image = `projects/${dirName}/场景 10_3.png`;
+                    projectImages[dirName] = [
+                        `projects/${dirName}/场景 10_3.png`,
+                        `projects/${dirName}/场景 11_3.png`,
+                        `projects/${dirName}/场景 12_2.png`,
+                        `projects/${dirName}/场景 13_2.png`,
+                        `projects/${dirName}/场景 14_2.png`
+                    ];
+                }
+                // 对于中组部老干部活动站项目
+                else if (dirName === '中组部老干部活动站') {
+                    // 使用实际存在的图片作为封面
+                    project.cover_image = 'projects/中组部老干部活动站/image2.jpeg';
+                    projectImages[dirName] = [
+                        'projects/中组部老干部活动站/image2.jpeg',
+                        'projects/中组部老干部活动站/image6.jpeg'
+                    ];
+                }
+                // 对于金雅园社区文化墙项目
+                else if (dirName === '金雅园社区文化墙') {
+                    // 使用实际存在的图片作为封面
+                    project.cover_image = 'projects/金雅园社区文化墙/image3.png';
+                    projectImages[dirName] = [
+                        'projects/金雅园社区文化墙/image3.png',
+                        'projects/金雅园社区文化墙/image4.png',
+                        'projects/金雅园社区文化墙/image5.png',
+                        'projects/金雅园社区文化墙/image6.png',
+                        'projects/金雅园社区文化墙/image7.png',
+                        'projects/金雅园社区文化墙/image8.png',
+                        'projects/金雅园社区文化墙/image9.png',
+                        'projects/金雅园社区文化墙/image10.png',
+                        'projects/金雅园社区文化墙/image11.png'
+                    ];
+                }
+                // 对于学院路街道办事处大件垃圾堆放处项目
+                else if (dirName === '学院路街道办事处大件垃圾堆放处') {
+                    // 使用实际存在的图片作为封面
+                    project.cover_image = 'projects/学院路街道办事处大件垃圾堆放处/image3.png';
+                    projectImages[dirName] = [
+                        'projects/学院路街道办事处大件垃圾堆放处/image3.png',
+                        'projects/学院路街道办事处大件垃圾堆放处/image5.png',
+                        'projects/学院路街道办事处大件垃圾堆放处/image6.png'
+                    ];
+                }
+                // 对于永东南社区项目
+                else if (dirName === '永东南社区') {
+                    // 使用实际存在的图片作为封面
+                    project.cover_image = 'projects/永东南社区/image4.png';
+                    projectImages[dirName] = [
+                        'projects/永东南社区/image4.png',
+                        'projects/永东南社区/image5.png',
+                        'projects/永东南社区/image6.png',
+                        'projects/永东南社区/image8.png'
+                    ];
+                }
+                // 对于永定路街道新就业群体友好驿站项目
+                else if (dirName === '永定路街道新就业群体友好驿站') {
+                    // 使用实际存在的图片作为封面
+                    project.cover_image = 'projects/永定路街道新就业群体友好驿站/image4.png';
+                    projectImages[dirName] = [
+                        'projects/永定路街道新就业群体友好驿站/image4.png',
+                        'projects/永定路街道新就业群体友好驿站/image5.png',
+                        'projects/永定路街道新就业群体友好驿站/image6.png',
+                        'projects/永定路街道新就业群体友好驿站/image7.png',
+                        'projects/永定路街道新就业群体友好驿站/image14.png',
+                        'projects/永定路街道新就业群体友好驿站/image15.png',
+                        'projects/永定路街道新就业群体友好驿站/image16.png',
+                        'projects/永定路街道新就业群体友好驿站/image17.png'
+                    ];
+                }
+                // 对于玉泉西里北社区文化墙项目
+                else if (dirName === '玉泉西里北社区文化墙') {
+                    // 使用实际存在的图片作为封面
+                    project.cover_image = 'projects/玉泉西里北社区文化墙/image3.png';
+                    projectImages[dirName] = [
+                        'projects/玉泉西里北社区文化墙/image3.png',
+                        'projects/玉泉西里北社区文化墙/image5.png',
+                        'projects/玉泉西里北社区文化墙/image8.png',
+                        'projects/玉泉西里北社区文化墙/image10.png',
+                        'projects/玉泉西里北社区文化墙/image12.png',
+                        'projects/玉泉西里北社区文化墙/image14.png',
+                        'projects/玉泉西里北社区文化墙/image16.png',
+                        'projects/玉泉西里北社区文化墙/image18.png',
+                        'projects/玉泉西里北社区文化墙/image19.png',
+                        'projects/玉泉西里北社区文化墙/image22.png',
+                        'projects/玉泉西里北社区文化墙/image24.png',
+                        'projects/玉泉西里北社区文化墙/image27.png',
+                        'projects/玉泉西里北社区文化墙/image29.png',
+                        'projects/玉泉西里北社区文化墙/image32.png',
+                        'projects/玉泉西里北社区文化墙/image34.png',
+                        'projects/玉泉西里北社区文化墙/image36.png',
+                        'projects/玉泉西里北社区文化墙/image37.png',
+                        'projects/玉泉西里北社区文化墙/image4.jpeg',
+                        'projects/玉泉西里北社区文化墙/image41.png',
+                        'projects/玉泉西里北社区文化墙/image43.png',
+                        'projects/玉泉西里北社区文化墙/image44.png',
+                        'projects/玉泉西里北社区文化墙/image46.png'
+                    ];
+                }
+                // 对于其他项目，尝试多种图片命名格式
+                else {
+                    // 尝试不同的图片路径格式
+                    const possibleFormats = [
+                        `projects/${dirName}/image1.png`,
+                        `projects/${dirName}/image2.png`,
+                        `projects/${dirName}/image3.png`,
+                        `projects/${dirName}/image4.png`,
+                        `projects/${dirName}/image5.png`,
+                        `projects/${dirName}/1.png`,
+                        `projects/${dirName}/场景 1.png`,
+                        `projects/${dirName}/场景 7_3.png`,
+                        `projects/${dirName}/场景 10_3.png`,
+                        `projects/${dirName}/Camera.001.png`,
+                        `projects/${dirName}/Camera.png`
+                    ];
+                    
+                    // 尝试第一个可能的路径作为封面
+                    project.cover_image = possibleFormats[0];
+                    
+                    // 添加多种可能的图片路径
+                    projectImages[dirName] = possibleFormats;
+                }
+            });
+        }
+
+        // 刷新项目数据
+        function refreshProjects() {
+            initProjects();
+            generateProjectCards();
+        }
+        
+        // 页面加载完成后初始化项目数据
+        window.onload = function() {
+            refreshProjects();
+            // 页面加载完成后添加拖拽排序功能
+            setTimeout(() => {
+                initDragAndDrop();
+            }, 1000);
+        };
+        
+        // 初始化拖拽排序功能
+        function initDragAndDrop() {
+            const container = document.getElementById('projects-container');
+            if (!container) return;
+            
+            const cards = container.querySelectorAll('.project-card');
+            
+            cards.forEach(card => {
+                // 添加拖拽开始事件
+                card.addEventListener('dragstart', function(e) {
+                    this.classList.add('dragging');
+                    e.dataTransfer.setData('text/plain', this.getAttribute('data-project-id'));
+                });
+                
+                // 添加拖拽结束事件
+                card.addEventListener('dragend', function() {
+                    this.classList.remove('dragging');
+                });
+                
+                // 添加触摸事件支持
+                card.addEventListener('touchstart', function(e) {
+                    this.style.transform = 'scale(0.95)';
+                    this.style.transition = 'transform 0.1s ease';
+                });
+                
+                card.addEventListener('touchend', function(e) {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            // 添加容器的拖拽事件
+            container.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                const draggingCard = document.querySelector('.dragging');
+                const siblings = [...this.querySelectorAll('.project-card:not(.dragging)')];
+                
+                const nextSibling = siblings.find(sibling => {
+                    const rect = sibling.getBoundingClientRect();
+                    const y = e.clientY - rect.top;
+                    return y <= rect.height / 2;
+                });
+                
+                if (nextSibling) {
+                    this.insertBefore(draggingCard, nextSibling);
+                } else {
+                    this.appendChild(draggingCard);
+                }
+            });
+            
+            container.addEventListener('drop', function(e) {
+                e.preventDefault();
+                const draggedId = e.dataTransfer.getData('text/plain');
+                const draggedCard = document.querySelector(`[data-project-id="${draggedId}"]`);
+                if (draggedCard) {
+                    // 保存排序结果
+                    saveSortOrder();
+                }
+            });
+        }
+        
+        // 保存排序结果到本地存储
+        function saveSortOrder() {
+            const container = document.getElementById('projects-container');
+            if (!container) return;
+            
+            const cards = container.querySelectorAll('.project-card');
+            const sortOrder = Array.from(cards).map(card => card.getAttribute('data-project-id'));
+            
+            localStorage.setItem('projectSortOrder', JSON.stringify(sortOrder));
+            console.log('排序结果已保存:', sortOrder);
+        }
+        
+        // 加载排序结果
+        function loadSortOrder() {
+            const container = document.getElementById('projects-container');
+            if (!container) return;
+            
+            const savedOrder = localStorage.getItem('projectSortOrder');
+            if (!savedOrder) return;
+            
+            const sortOrder = JSON.parse(savedOrder);
+            const cards = container.querySelectorAll('.project-card');
+            
+            // 创建卡片映射
+            const cardMap = {};
+            cards.forEach(card => {
+                const id = card.getAttribute('data-project-id');
+                cardMap[id] = card;
+            });
+            
+            // 按照保存的顺序重新排列卡片
+            sortOrder.forEach(id => {
+                if (cardMap[id]) {
+                    container.appendChild(cardMap[id]);
+                }
+            });
+            
+            console.log('排序结果已加载:', sortOrder);
+        }
+
+        // 搜索项目
+        function searchProjects() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            
+            // 过滤项目
+            let filteredProjects = searchTerm ? 
+                projects.filter(project => project.title.toLowerCase().includes(searchTerm)) : 
+                projects;
+            
+            // 按搜索匹配度排序
+            if (searchTerm) {
+                filteredProjects.sort((a, b) => {
+                    const aMatch = a.title.toLowerCase().indexOf(searchTerm);
+                    const bMatch = b.title.toLowerCase().indexOf(searchTerm);
+                    // 匹配位置越靠前，排序越靠前
+                    if (aMatch !== bMatch) {
+                        return aMatch - bMatch;
+                    }
+                    // 长度越短，排序越靠前
+                    return a.title.length - b.title.length;
+                });
+            }
+            
+            // 更新项目卡片
+            const container = document.getElementById('projects-container');
+            container.innerHTML = '';
+            
+            if (filteredProjects.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px;"><p>未找到匹配的项目</p></div>';
+                return;
+            }
+            
+            // 生成过滤后的项目卡片
+            filteredProjects.forEach(project => {
+                // 创建卡片元素
+                const cardElement = document.createElement('div');
+                cardElement.className = 'project-card';
+                cardElement.setAttribute('data-project-id', project.id);
+                cardElement.draggable = true;
+                
+                // 创建图片元素
+                const imgElement = document.createElement('img');
+                imgElement.className = 'project-image';
+                imgElement.alt = project.title;
+                
+                // 设置图片源并添加加载失败处理
+                if (project.cover_image) {
+                    imgElement.src = project.cover_image;
+                    // 图片加载失败时显示占位符
+                    imgElement.onerror = function() {
+                        this.src = 'https://via.placeholder.com/400x250?text=No+Image';
+                    };
+                } else {
+                    imgElement.src = 'https://via.placeholder.com/400x250?text=No+Image';
+                }
+                
+                // 创建卡片内容
+                const cardBody = document.createElement('div');
+                cardBody.className = 'card-body';
+                
+                const cardTitle = document.createElement('h5');
+                cardTitle.className = 'card-title';
+                cardTitle.textContent = project.title;
+                
+                // 组装卡片
+                cardBody.appendChild(cardTitle);
+                cardElement.appendChild(imgElement);
+                cardElement.appendChild(cardBody);
+                container.appendChild(cardElement);
+            });
+            
+            // 添加点击事件
+            document.querySelectorAll('.project-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const projectId = this.getAttribute('data-project-id');
+                    showProjectDetails(projectId);
+                });
+            });
+            
+            // 添加拖拽事件
+            initDragAndDrop();
+        }
+
+        // 全局变量
+        let currentPage = 1;
+        const cardsPerPage = 50; // 每页显示50个卡片，确保一次性加载所有项目
+        let isLoading = false;
+        let isAllLoaded = false;
+        
+        // 生成项目卡片（支持分页加载）
+        function generateProjectCards() {
+            const container = document.getElementById('projects-container');
+            
+            if (!container) {
+                console.error('未找到projects-container元素');
+                return;
+            }
+            
+            if (projects.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px;"><p>暂无作品，敬请期待</p></div>';
+                return;
+            }
+            
+            console.log('生成项目卡片...');
+            console.log('项目总数:', projects.length);
+            
+            // 清空容器，重置状态
+            container.innerHTML = '';
+            currentPage = 1;
+            isLoading = false;
+            isAllLoaded = false;
+            
+            // 初始加载第一页
+            loadNextPage();
+        }
+        
+        // 处理滚动事件，实现无限滚动
+        function handleScroll() {
+            const container = document.getElementById('projects-container');
+            if (!container) return;
+            
+            // 当滚动到底部时加载更多
+            if (container.scrollTop + container.clientHeight >= container.scrollHeight - 100 && !isLoading && !isAllLoaded) {
+                loadNextPage();
+            }
+        }
+        
+        // 加载下一页卡片
+        function loadNextPage() {
+            if (isLoading || isAllLoaded) return;
+            
+            isLoading = true;
+            
+            const container = document.getElementById('projects-container');
+            if (!container) return;
+            
+            console.log('加载下一页卡片...');
+            console.log('当前页码:', currentPage);
+            console.log('项目总数:', projects.length);
+            
+            // 计算当前页的起始和结束索引
+            const startIndex = (currentPage - 1) * cardsPerPage;
+            const endIndex = Math.min(startIndex + cardsPerPage, projects.length);
+            
+            console.log('加载范围:', startIndex, '到', endIndex);
+            
+            // 如果已经加载完所有卡片
+            if (startIndex >= projects.length) {
+                console.log('所有卡片已加载完毕');
+                isAllLoaded = true;
+                return;
+            }
+            
+            // 获取当前页的项目
+            const pageProjects = projects.slice(startIndex, endIndex);
+            console.log('当前页项目数量:', pageProjects.length);
+            
+            // 存储当前页的卡片元素
+            const cardElements = [];
+            
+            // 创建当前页的卡片元素
+            pageProjects.forEach(project => {
+                // 创建卡片元素
+                const cardElement = document.createElement('div');
+                cardElement.className = 'project-card touch-feedback';
+                cardElement.setAttribute('data-project-id', project.id);
+                cardElement.style.opacity = '0';
+                cardElement.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                cardElement.style.transform = 'translateY(20px)';
+                // 添加拖拽属性
+                cardElement.draggable = true;
+                
+                // 创建图片元素
+                const imgElement = document.createElement('img');
+                imgElement.className = 'project-image lazy-load';
+                imgElement.alt = project.title;
+                imgElement.loading = 'lazy';
+                imgElement.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="225"%3E%3Crect width="400" height="225" fill="rgba(0, 0, 0, 0.1)"/%3E%3C/svg%3E';
+                imgElement.dataset.src = project.cover_image;
+                imgElement.style.opacity = '0';
+                imgElement.style.transition = 'opacity 0.5s ease';
+                
+                // 创建卡片内容
+                const cardBody = document.createElement('div');
+                cardBody.className = 'card-body';
+                cardBody.style.opacity = '0';
+                cardBody.style.transition = 'opacity 0.5s ease';
+                
+                const cardTitle = document.createElement('h5');
+                cardTitle.className = 'card-title';
+                cardTitle.textContent = project.title;
+                
+                // 组装卡片
+                cardBody.appendChild(cardTitle);
+                cardElement.appendChild(imgElement);
+                cardElement.appendChild(cardBody);
+                container.appendChild(cardElement);
+                
+                // 存储卡片元素和相关信息
+                cardElements.push({
+                    card: cardElement,
+                    image: imgElement,
+                    cardBody: cardBody,
+                    project: project
+                });
+            });
+            
+            // 添加点击事件
+            pageProjects.forEach((project, index) => {
+                const card = cardElements[index].card;
+                card.addEventListener('click', function() {
+                    const projectId = this.getAttribute('data-project-id');
+                    showProjectDetails(projectId);
+                });
+            });
+            
+            // 实现当前页卡片的顺序加载
+            let currentLoadingIndex = 0;
+            
+            function loadNextCard() {
+                if (currentLoadingIndex >= cardElements.length) {
+                    // 当前页加载完成
+                    currentPage++;
+                    isLoading = false;
+                    return;
+                }
+                
+                const cardElement = cardElements[currentLoadingIndex];
+                const { image, project, card, cardBody } = cardElement;
+                
+                // 卡片从下方滑入并逐渐显示
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+                
+                // 立即开始加载图片
+                    if (project.cover_image) {
+                        console.log('加载项目图片:', project.cover_image);
+                        image.src = image.dataset.src;
+                        
+                        // 图片加载完成后显示
+                        image.onload = function() {
+                            console.log('图片加载成功:', this.src);
+                            this.style.opacity = '1';
+                            this.classList.add('loaded');
+                            cardBody.style.opacity = '1';
+                        };
+                        
+                        // 图片加载失败的处理
+                        image.onerror = function() {
+                            console.log('图片加载失败:', this.src);
+                            // 尝试其他可能的图片路径
+                            const otherFormats = [
+                                `projects/${project.id}/image1.png`,
+                                `projects/${project.id}/image2.png`,
+                                `projects/${project.id}/image3.png`,
+                                `projects/${project.id}/image4.png`,
+                                `projects/${project.id}/image5.png`,
+                                `projects/${project.id}/1.png`,
+                                `projects/${project.id}/场景 1.png`,
+                                `projects/${project.id}/场景 7_3.png`,
+                                `projects/${project.id}/场景 10_3.png`,
+                                `projects/${project.id}/Camera.001.png`,
+                                `projects/${project.id}/Camera.png`,
+                                `projects/${project.id}/image1.jpeg`,
+                                `projects/${project.id}/image2.jpeg`,
+                                `projects/${project.id}/image3.jpeg`,
+                                `projects/${project.id}/image4.jpeg`,
+                                `projects/${project.id}/image5.jpeg`,
+                                `projects/${project.id}/image6.jpeg`,
+                                `projects/${project.id}/image7.jpeg`,
+                                `projects/${project.id}/image8.jpeg`,
+                                `projects/${project.id}/image9.jpeg`,
+                                `projects/${project.id}/image10.jpeg`
+                            ];
+                            
+                            // 尝试下一个格式
+                            let currentFormatIndex = 0;
+                            let retryCount = 0;
+                            const maxRetries = 3;
+                            
+                            function tryNextFormat() {
+                                if (currentFormatIndex >= otherFormats.length) {
+                                    // 所有格式都尝试失败，使用占位符
+                                    this.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="225"%3E%3Crect width="400" height="225" fill="rgba(0, 0, 0, 0.3)"/%3E%3Ctext x="200" y="112" text-anchor="middle" fill="rgba(255, 255, 255, 0.5)" font-size="14"%3E图片加载失败%3C/text%3E%3C/svg%3E';
+                                    this.style.opacity = '1';
+                                    this.classList.add('loaded');
+                                    cardBody.style.opacity = '1';
+                                    return;
+                                }
+                                
+                                const nextFormat = otherFormats[currentFormatIndex];
+                                console.log('尝试其他格式:', nextFormat);
+                                this.src = nextFormat;
+                                currentFormatIndex++;
+                            }
+                            
+                            function retryLoad() {
+                                if (retryCount >= maxRetries) {
+                                    tryNextFormat.call(this);
+                                    return;
+                                }
+                                
+                                retryCount++;
+                                console.log('重试加载图片:', this.src, '第', retryCount, '次');
+                                this.src = this.src + '?t=' + new Date().getTime();
+                            }
+                            
+                            // 尝试其他格式
+                            tryNextFormat.call(this);
+                            
+                            // 重新设置onload和onerror事件
+                            this.onload = function() {
+                                console.log('图片加载成功:', this.src);
+                                this.style.opacity = '1';
+                                this.classList.add('loaded');
+                                cardBody.style.opacity = '1';
+                            };
+                            
+                            this.onerror = function() {
+                                console.log('图片加载失败:', this.src);
+                                if (retryCount < maxRetries) {
+                                    retryLoad.call(this);
+                                } else {
+                                    tryNextFormat.call(this);
+                                }
+                            };
+                        };
+                    } else {
+                        // 没有封面图片，使用占位符
+                        image.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="225"%3E%3Crect width="400" height="225" fill="rgba(0, 0, 0, 0.3)"/%3E%3Ctext x="200" y="112" text-anchor="middle" fill="rgba(255, 255, 255, 0.5)" font-size="14"%3E无图片%3C/text%3E%3C/svg%3E';
+                        image.style.opacity = '1';
+                        image.classList.add('loaded');
+                        cardBody.style.opacity = '1';
+                    }
+                
+                // 直接加载下一张，不使用递归
+                currentLoadingIndex++;
+                loadNextCard();
+            }
+            
+            // 开始加载当前页的卡片
+            loadNextCard();
+        }
+        
+        // 刷新项目数据（支持动态更新）
+        function refreshProjects() {
+            // 保存当前搜索状态
+            const searchInput = document.getElementById('search-input');
+            const searchTerm = searchInput ? searchInput.value : '';
+            
+            // 重新初始化项目数据
+            initProjects();
+            
+            // 如果有搜索词，执行搜索
+            if (searchTerm) {
+                document.getElementById('search-input').value = searchTerm;
+                searchProjects();
+            } else {
+                // 否则重新生成项目卡片
+                generateProjectCards();
+            }
+        }
+        
+        // 检查项目更新的函数
+        function checkProjectUpdates() {
+            console.log('检查项目更新...');
+            console.log('当前时间:', new Date().toLocaleString());
+            
+            // 尝试检测所有可能的项目目录
+            const possibleProjectDirs = [
+                '今日家园',
+                '八宝山街道永东北社区',
+                '古城泰然体育健康中心',
+                '复兴路24号社区长廊',
+                '平谷刑侦办公通道',
+                '永定路东里社区',
+                '海能环境办公室',
+                '海能环境办公楼',
+                '翠西楼道空间文化墙打造',
+                '金沟河东路社区居委会文化',
+                '万寿路28号社区',
+                '万寿路街道党群服务中心门头',
+                '中农健康科技',
+                '中组部老干部活动站',
+                '太平路22号院',
+                '学院路街道办事处大件垃圾堆放处',
+                '曙光街道世纪城西区社区会客议事厅',
+                '曙光街道远大园社区',
+                '永东南社区',
+                '永定路街道新就业群体友好驿站',
+                '玉泉西里北社区文化墙',
+                '玉泉西里西社区党群服务中心',
+                '石景山区委党校运动健康中心',
+                '金雅园社区文化墙' // 新添加的项目
+            ];
+            
+            // 动态检测实际存在的项目
+            const actualProjectDirs = [];
+            let checkedCount = 0;
+            
+            possibleProjectDirs.forEach(dirName => {
+                // 尝试加载项目的封面图片来检测项目是否存在
+                const img = new Image();
+                img.onload = function() {
+                    // 图片加载成功，项目存在
+                    if
+                    // 触摸事件支持
+                    document.addEventListener('touchstart', function(e) {
+                        touchStartX = e.changedTouches[0].screenX;
+                        touchStartY = e.changedTouches[0].screenY;
+                    }, false);
+                    
+                    document.addEventListener('touchend', function(e) {
+                        touchEndX = e.changedTouches[0].screenX;
+                        touchEndY = e.changedTouches[0].screenY;
+                        handleSwipe();
+                    }, false);
+                    
+                    function handleSwipe() {
+                        const diffX = touchEndX - touchStartX;
+                        const diffY = touchEndY - touchStartY;
+                        
+                        // 水平滑动
+                        if (Math.abs(diffX) > Math.abs(diffY)) {
+                            if (Math.abs(diffX) > 100) {
+                                if (diffX > 0) {
+                                    // 右滑
+                                    console.log('右滑');
+                                } else {
+                                    // 左滑
+                                    console.log('左滑');
+                                }
+                            }
+                        } else {
+                            // 垂直滑动
+                            if (Math.abs(diffY) > 100) {
+                                if (diffY > 0) {
+                                    // 下滑
+                                    console.log('下滑');
+                                } else {
+                                    // 上滑
+                                    console.log('上滑');
+                                }
+                            }
+                        }
+                    }
+                    
+                    // 为图片添加触摸缩放支持
+                    function addPinchZoom(element) {
+                        element.addEventListener('touchstart', function(e) {
+                            if (e.touches.length === 2) {
+                                e.preventDefault();
+                                lastTouchDistance = getDistance(e.touches[0], e.touches[1]);
+                                startScale = currentScale;
+                            }
+                        });
+                        
+                        element.addEventListener('touchmove', function(e) {
+                            if (e.touches.length === 2) {
+                                e.preventDefault();
+                                const distance = getDistance(e.touches[0], e.touches[1]);
+                                const scale = (distance / lastTouchDistance) * startScale;
+                                currentScale = Math.max(0.5, Math.min(scale, 5));
+                                
+                                element.style.transform = `scale(${currentScale})`;
+                                element.style.transformOrigin = 'center center';
+                            }
+                        });
+                    }
+                    
+                    function getDistance(touch1, touch2) {
+                        return Math.hypot(
+                            touch2.clientX - touch1.clientX,
+                            touch2.clientY - touch1.clientY
+                        );
+                    }
+                    
+                    // 为所有图片添加触摸缩放支持
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const images = document.querySelectorAll('.project-image, .main-image, .grid-image');
+                        images.forEach(img => {
+                            addPinchZoom(img);
+                        });
+                    });
